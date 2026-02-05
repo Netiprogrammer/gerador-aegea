@@ -3,241 +3,264 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gerador de Cartas | Aegea</title>
+    <title>Generation AE</title>
     
-    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" href="logo-azul.png" type="image/png" id="favicon-link">
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-    <script>pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';</script>
+    <script>
+        // Configuração do Worker do PDF.js
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    </script>
 </head>
 <body>
 
-    <div id="login-screen">
-        <div class="login-card">
-            <i class='bx bxs-lock-alt' style="font-size: 50px; color: var(--primary); margin-bottom: 20px;"></i>
-            <h2>Acesso Restrito</h2>
-            <p>Ferramenta exclusiva RH - Águas de Manaus</p>
-            
-            <div class="input-group">
-                <input type="password" id="senhaInput" placeholder="Digite a chave de acesso...">
-            </div>
-            
-            <button class="btn-primary w-100" onclick="verificarAcesso()">Entrar no Sistema</button>
-            <p id="msgErro" style="color: #ff4d4d; margin-top: 10px; display: none; font-size: 14px; font-weight: bold;">Chave incorreta!</p>
-        </div>
+    <div class="ocean">
+        <div class="wave"></div>
+        <div class="wave"></div>
     </div>
 
-    <nav class="sidebar" id="sidebar">
-        <div class="logo-details">
-            <i class='bx bxl-codepen icon'></i>
-            <div class="logo_name">RH Tools</div>
-            <i class='bx bx-menu' id="btn" ></i>
-        </div>
-        <ul class="nav-list">
-            <li class="active">
-                <a href="#" onclick="switchPage('dashboard', this)">
-                    <i class='bx bx-grid-alt'></i>
-                    <span class="links_name">Dashboard</span>
-                </a>
-                <span class="tooltip">Dashboard</span>
-            </li>
-            <li>
-                <a href="#" onclick="switchPage('settings', this)">
-                    <i class='bx bx-slider-alt'></i>
-                    <span class="links_name">Configurar Modelos</span>
-                </a>
-                <span class="tooltip">Configurar</span>
-            </li>
-            <li>
-                <a href="#" onclick="switchPage('manual', this)">
-                    <i class='bx bx-edit'></i>
-                    <span class="links_name">Cadastro Manual</span>
-                </a>
-                <span class="tooltip">Manual</span>
-            </li>
-        </ul>
-        <div class="profile">
-            <div class="profile-details">
-                <div class="name_job">
-                    <div class="name">João Neto</div>
-                    <div class="job">Dev Full Stack</div>
-                </div>
+    <aside id="sidebar">
+        <div class="brand-header">
+            <div class="logo-container">
+                <img src="logo-azul.png" alt="Aegea" id="logo-img">
             </div>
-            <div class="theme-switch-wrapper">
-               <label class="theme-switch" for="switch-mode">
-                <input type="checkbox" id="switch-mode" />
-                <div class="slider round"></div>
-              </label>
-            </div>
+            <button id="sidebar-close"><i class='bx bx-x'></i></button>
         </div>
-    </nav>
 
-    <section class="home-section">
-        
-        <div id="page-dashboard" class="page-section active">
-            <div class="text">Gerador de Cartas em Massa</div>
+        <div class="menu-container">
+            <ul class="side-menu">
+                <li class="active">
+                    <a href="#" onclick="switchPage('dashboard', this); return false;">
+                        <i class='bx bxs-dashboard'></i> <span>Início</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" onclick="switchPage('manual', this); return false;">
+                        <i class='bx bxs-user-plus'></i> <span>Novo Cadastro</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" onclick="switchPage('import', this); return false;">
+                        <i class='bx bxs-file-import'></i> <span>Importar Excel</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" onclick="switchPage('history', this); return false;">
+                        <i class='bx bxs-time-five'></i> <span>Histórico</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" onclick="switchPage('settings', this); return false;">
+                        <i class='bx bxs-cog'></i> <span>Modelos & Templates</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </aside>
+
+    <div id="content">
+        <nav>
+            <button id="menu-toggle"><i class='bx bx-menu'></i></button>
+            <div style="flex:1"></div>
             
-            <div class="upload-zone">
-                <div class="drop-area">
-                    <i class='bx bxs-cloud-upload'></i>
-                    <h3>Arraste sua planilha Excel aqui</h3>
-                    <p>ou clique para selecionar</p>
-                    <input type="file" id="excelInput" accept=".xlsx, .xls" hidden>
-                    <button class="btn-primary" onclick="document.getElementById('excelInput').click()">Selecionar Arquivo</button>
+            <div class="nav-right">
+                <div class="theme-switch">
+                    <input type="checkbox" id="switch-mode" hidden>
+                    <label for="switch-mode" class="switch-mode-label">
+                        <i class='bx bxs-moon'></i>
+                        <i class='bx bxs-sun'></i>
+                    </label>
+                </div>
+                <div class="profile">
+                    <img src="https://ui-avatars.com/api/?name=Joao+Neto&background=0066ff&color=fff" alt="Perfil">
+                    <span>João Neto</span>
                 </div>
             </div>
+        </nav>
 
-            <div class="queue-container">
-                <div class="queue-header">
-                    <h3>Fila de Processamento <span id="queueCount" class="badge">0</span></h3>
-                    <div class="actions">
-                        <button class="btn-danger" onclick="limparFila()">Limpar Tudo</button>
-                        <button class="btn-success" onclick="processarFila()">
-                            <i class='bx bx-play'></i> Gerar e Baixar ZIP
+        <main>
+            <section id="page-dashboard" class="page-section active">
+                <div class="page-header">
+                    <h1>Fila de Processamento</h1>
+                    <div style="display: flex; gap: 10px;">
+                        <button class="mi-btn secondary" onclick="limparFila()">
+                            <i class='bx bx-trash'></i> Limpar
+                        </button>
+                        <button class="mi-btn primary" onclick="processarFila()">
+                            <i class='bx bxs-download'></i> Gerar ZIP
                         </button>
                     </div>
                 </div>
-                <div class="table-responsive">
-                    <table class="queue-table">
-                        <thead>
-                            <tr>
-                                <th>Nome</th>
-                                <th>Tipo</th>
-                                <th>Cargo</th>
-                                <th>Salário</th>
-                                <th>Ação</th>
-                            </tr>
-                        </thead>
-                        <tbody id="queueBody"></tbody>
-                    </table>
-                    <div id="emptyQueue" class="empty-state">Nenhum colaborador na fila.</div>
-                </div>
-            </div>
-            
-            <div class="history-section">
-                <h3>Histórico Recente</h3>
-                <div class="table-responsive small">
-                    <table class="history-table">
-                        <thead><tr><th>Data</th><th>Nome</th><th>Tipo</th></tr></thead>
-                        <tbody id="historyBody"></tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
 
-        <div id="page-settings" class="page-section hidden">
-            <div class="text">Configuração dos Modelos</div>
-            
-            <div class="config-grid">
-                <div class="control-panel">
-                    <div class="tabs">
-                        <button class="tab-btn active" onclick="switchConfigTab('Merito')">Mérito</button>
-                        <button class="tab-btn" onclick="switchConfigTab('Promocao')">Promoção</button>
+                <div class="kpi-grid">
+                    <div class="kpi-card">
+                        <div class="kpi-icon"><i class='bx bxs-layer'></i></div>
+                        <div class="kpi-data">
+                            <h3 id="queueCount">0</h3>
+                            <p>Na Fila</p>
+                        </div>
                     </div>
-                    
-                    <h4 id="configTitle">Ajustando: Mérito</h4>
-                    
-                    <div class="input-group">
-                        <label>Imagem de Fundo (JPG/PNG ou PDF)</label>
-                        <input type="file" id="bgImageInput" accept="image/*,.pdf" class="file-input">
+                    <div class="kpi-card success">
+                        <div class="kpi-icon"><i class='bx bxs-check-shield'></i></div>
+                        <div class="kpi-data">
+                            <h3 id="generatedCount">0</h3>
+                            <p>Concluídos Hoje</p>
+                        </div>
                     </div>
-
-                    <div class="slider-group">
-                        <label>Posição Vertical (Y)</label>
-                        <input type="range" id="confPosY" min="0" max="1000" value="500">
-                    </div>
-                    <div class="slider-group">
-                        <label>Margem Esquerda (X)</label>
-                        <input type="range" id="confPosX" min="0" max="500" value="150">
-                    </div>
-                    <div class="slider-group">
-                        <label>Largura do Texto</label>
-                        <input type="range" id="confWidth" min="200" max="1000" value="650">
-                    </div>
-                    <div class="slider-group">
-                        <label>Tamanho da Fonte</label>
-                        <input type="range" id="confFontSize" min="10" max="50" value="22">
-                    </div>
-                    
-                    <button class="btn-primary w-100" onclick="salvarConfigAtual()">Salvar Configuração</button>
                 </div>
 
-                <div class="preview-panel">
-                    <canvas id="previewCanvas"></canvas>
-                    <div id="noImageMsg">Carregue um modelo para visualizar</div>
+                <div class="content-card">
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Colaborador</th>
+                                    <th>Modelo Aplicado</th>
+                                    <th>Cargo</th>
+                                    <th>Salário</th>
+                                    <th style="text-align: right;">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="queueBody"></tbody>
+                        </table>
+                        <div id="emptyQueue" class="empty-state">
+                            <i class='bx bx-ghost'></i>
+                            <p>Fila vazia. Importe uma planilha para começar.</p>
+                        </div>
+                    </div>
                 </div>
-            </div>
-        </div>
+            </section>
 
-        <div id="page-manual" class="page-section hidden">
-            <div class="text">Cadastro Manual Unitário</div>
-            <div class="form-container">
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Nome Completo</label>
-                        <input type="text" id="formNome" placeholder="Ex: João da Silva">
+            <section id="page-manual" class="page-section hidden">
+                <div class="page-header"><h1>Cadastro Manual</h1></div>
+                <div class="content-card">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Modelo da Carta</label>
+                            <select class="mi-input" id="formTipo" onchange="toggleCargoField()">
+                                <option value="Merito">Mérito</option>
+                                <option value="Promocao">Promoção</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Vigência</label>
+                            <input type="text" class="mi-input" id="formData" value="01/01/2026">
+                        </div>
+                        <div class="form-group span-2">
+                            <label>Nome Completo</label>
+                            <input type="text" class="mi-input" id="formNome" placeholder="Nome do colaborador">
+                        </div>
+                        <div class="form-group span-2 hidden" id="groupCargo">
+                            <label>Novo Cargo</label>
+                            <input type="text" class="mi-input" id="formCargo" placeholder="Ex: Analista Sênior">
+                        </div>
+                        <div class="form-group">
+                            <label>Novo Salário (R$)</label>
+                            <input type="text" class="mi-input" id="formSalario" placeholder="5000,00">
+                        </div>
+                        <div class="form-group">
+                            <label>Salário por Extenso</label>
+                            <input type="text" class="mi-input" id="formSalarioExtenso" placeholder="cinco mil reais">
+                        </div>
+                        <div class="form-group">
+                            <label>Porcentagem (%)</label>
+                            <input type="text" class="mi-input" id="formPct" placeholder="20">
+                        </div>
+                        <div class="form-group">
+                            <label>Nome do Líder</label>
+                            <input type="text" class="mi-input" id="formGestor">
+                        </div>
+                        <div class="form-group">
+                            <label>Cargo do Líder</label>
+                            <input type="text" class="mi-input" id="formCargoGestor">
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label>Tipo</label>
-                        <select id="formTipo" onchange="toggleCargoField()">
-                            <option value="Merito">Mérito</option>
-                            <option value="Promocao">Promoção</option>
-                        </select>
+                    <div style="margin-top: 30px;">
+                        <button class="mi-btn primary large" onclick="adicionarManual()">Adicionar à Fila</button>
                     </div>
                 </div>
+            </section>
+
+            <section id="page-import" class="page-section hidden">
+                <div class="page-header"><h1>Importar Excel</h1></div>
+                <div class="content-card">
+                    <div class="upload-zone">
+                        <i class='bx bxs-cloud-upload'></i>
+                        <h3>Clique ou arraste sua planilha aqui</h3>
+                        <p style="color: var(--text-secondary); margin-top: 10px;">O sistema detecta automaticamente se é Mérito ou Promoção.</p>
+                        <input type="file" id="excelInput" accept=".xlsx">
+                    </div>
+                </div>
+            </section>
+
+            <section id="page-history" class="page-section hidden">
+                <div class="page-header">
+                    <h1>Histórico</h1>
+                    <button class="mi-btn secondary" onclick="limparHistorico()">Limpar</button>
+                </div>
+                <div class="content-card">
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr><th>Data</th><th>Nome</th><th>Tipo</th></tr>
+                            </thead>
+                            <tbody id="historyBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <section id="page-settings" class="page-section hidden">
+                <div class="page-header"><h1>Modelos & Templates</h1></div>
                 
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Data Vigência</label>
-                        <input type="text" id="formData" value="01/01/2026">
-                    </div>
-                    <div class="form-group">
-                        <label>Novo Salário (R$)</label>
-                        <input type="text" id="formSalario" placeholder="Ex: 5.000,00">
-                    </div>
+                <div class="tabs-container">
+                    <button class="tab-btn active" onclick="switchConfigTab('Merito')">Configurar Mérito</button>
+                    <button class="tab-btn" onclick="switchConfigTab('Promocao')">Configurar Promoção</button>
                 </div>
 
-                <div class="form-group">
-                    <label>Salário por Extenso (Automático)</label>
-                    <input type="text" id="formSalarioExtenso" placeholder="Preenchido automaticamente">
+                <div class="settings-grid">
+                    <div class="content-card">
+                        <h3 id="configTitle">Ajustando: Mérito</h3>
+                        <p style="color: var(--text-secondary); font-size: 14px; margin-bottom: 20px;">
+                            Carregue o PDF ou Imagem do modelo limpo.
+                        </p>
+
+                        <div class="form-group" style="margin-bottom: 30px;">
+                            <label>Arquivo de Fundo (PDF ou Imagem)</label>
+                            <div style="position:relative;">
+                                <button class="mi-btn secondary" style="width:100%">Carregar Arquivo</button>
+                                <input type="file" id="bgImageInput" accept="image/*, application/pdf" style="position:absolute;top:0;left:0;width:100%;height:100%;opacity:0;cursor:pointer;">
+                            </div>
+                        </div>
+
+                        <div class="range-group"><label>Posição Y (Topo)</label><input type="range" id="confPosY" min="100" max="1000"></div>
+                        <div class="range-group"><label>Margem X (Esquerda)</label><input type="range" id="confPosX" min="0" max="300"></div>
+                        <div class="range-group"><label>Largura Texto</label><input type="range" id="confWidth" min="300" max="1000"></div>
+                        <div class="range-group"><label>Tamanho Fonte</label><input type="number" class="mi-input" id="confFontSize"></div>
+                        
+                        <button class="mi-btn primary full-width" onclick="salvarConfigAtual()">Salvar Configuração</button>
+                    </div>
+
+                    <div class="content-card preview-card">
+                        <canvas id="previewCanvas"></canvas>
+                        <span id="noImageMsg" style="position: absolute; color: white;">Carregue o Template</span>
+                    </div>
                 </div>
+            </section>
 
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Porcentagem (%)</label>
-                        <input type="text" id="formPct" placeholder="Ex: 10% (Opcional)">
-                    </div>
-                    <div class="form-group hidden" id="groupCargo">
-                        <label>Novo Cargo (Funcionário)</label>
-                        <input type="text" id="formCargo" placeholder="Ex: Analista Pleno">
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Nome do Gestor</label>
-                        <input type="text" id="formGestor" placeholder="Ex: Maria Souza">
-                    </div>
-                    <div class="form-group">
-                        <label>Cargo do Gestor</label>
-                        <input type="text" id="formCargoGestor" placeholder="Ex: Gerente de RH">
-                    </div>
-                </div>
-
-                <button class="btn-success" onclick="adicionarManual()">Adicionar à Fila</button>
-            </div>
-        </div>
-
-    </section>
+        </main>
+    </div>
 
     <div id="toast-container"></div>
-
     <script src="script.js"></script>
 </body>
 </html>
