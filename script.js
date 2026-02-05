@@ -1,34 +1,3 @@
-// --- CONFIGURAÇÃO DE SEGURANÇA ---
-const SENHA_MESTRA = "rh2026"; // << SUASENHA AQUI
-
-// Verifica Login ao Iniciar
-if (sessionStorage.getItem('acesso_aegea') === 'ok') {
-    const style = document.createElement('style');
-    style.innerHTML = '#login-screen { display: none !important; }';
-    document.head.appendChild(style);
-}
-
-// Função de Login
-window.verificarAcesso = function() {
-    const input = document.getElementById('senhaInput');
-    const erro = document.getElementById('msgErro');
-    
-    if (input.value === SENHA_MESTRA) {
-        document.getElementById('login-screen').classList.add('unlocked');
-        sessionStorage.setItem('acesso_aegea', 'ok');
-    } else {
-        erro.style.display = 'block';
-        input.style.borderColor = 'red';
-        setTimeout(() => { input.style.borderColor = '#ddd'; }, 2000);
-    }
-}
-
-document.addEventListener("keypress", function(event) {
-    if (event.key === "Enter" && !sessionStorage.getItem('acesso_aegea')) {
-        verificarAcesso();
-    }
-});
-
 // --- ESTADO GLOBAL ---
 let filaProcessamento = []; 
 let activeConfig = 'Merito'; 
@@ -131,7 +100,7 @@ document.addEventListener('DOMContentLoaded', () => {
     resetSliders();
 });
 
-// --- FUNÇÃO: NÚMERO PARA EXTENSO (CORRIGIDA: MIL REAIS) ---
+// --- FUNÇÃO: NÚMERO PARA EXTENSO ---
 function numeroParaExtenso(v) {
     if (v === 0) return "zero reais";
     
@@ -171,31 +140,12 @@ function numeroParaExtenso(v) {
             }
         }
         
-        // Lógica de Concatenação dos Grupos
         if (c === 0) {
-            // Grupo das Unidades/Centenas (0 a 999)
             s = grExt + (nGr > 1 || nGr === 0 ? " reais" : " real");
         } else {
-            // Grupo de Milhares e Milhões
-            if (c === 1 && nGr === 1) {
-                // EXCEÇÃO DO "MIL": Se for 1.000, escreve só "mil" e não "um mil"
-                // E também trata o sufixo: "mil reais" (se redondo) ou "mil e ..."
-                s = "mil" + (s ? " e " + s : " reais");
-            } else {
-                let qualif = (nGr > 1) ? qualificaP[c] : qualificaS[c];
-                
-                // Define o conector final (ex: "de reais" p/ milhões ou "reais" p/ milhares redondos)
-                let sufixo = "";
-                if (s) {
-                    sufixo = " e " + s;
-                } else {
-                    // Se s está vazio (número redondo tipo 2.000 ou 1.000.000)
-                    // Milhares (c=1) usa "reais". Milhões (c>=2) usa "de reais".
-                    sufixo = (c >= 2) ? " de reais" : " reais";
-                }
-                
-                s = grExt + " " + qualif + sufixo;
-            }
+            let qualif = (nGr > 1) ? qualificaP[c] : qualificaS[c];
+            if(c === 1 && nGr === 1) qualif = "mil"; 
+            s = grExt + " " + qualif + (s ? " e " + s : " de reais"); 
         }
     }
 
@@ -237,7 +187,7 @@ async function loadPdfAsImage(file) {
     return canvas.toDataURL('image/jpeg', 0.95);
 }
 
-// --- ENGINE DE TEXTO ---
+// --- ENGINE DE TEXTO (ARIAL + NEGRITO) ---
 function drawRichText(ctx, text, x, y, maxWidth, fontSize, lineHeight) {
     const parts = text.split(/(\*\*.*?\*\*)/g);
     let currentX = x;
@@ -284,7 +234,7 @@ function drawRichText(ctx, text, x, y, maxWidth, fontSize, lineHeight) {
     return currentY + lineHeight;
 }
 
-// --- DESENHO PRINCIPAL ---
+// --- DESENHO PRINCIPAL (GERAÇÃO) ---
 function desenharCarta(ctx, dados, cfg) {
     if(cfg.imgObj.src) ctx.drawImage(cfg.imgObj, 0, 0);
 
@@ -315,13 +265,15 @@ function desenharCarta(ctx, dados, cfg) {
     const whiteH = H * 0.55; 
     ctx.fillRect(W * 0.08, whiteY, W * 0.84, whiteH);
 
-    // Dados
+    // Dados (Aqui garantimos que Cargo e CargoGestor sejam coisas diferentes)
     const nome = dados.Nome || "NOME COLABORADOR";
     const data = dados.Data || "DATA";
+    
+    // CARGO DO FUNCIONÁRIO (No Texto)
     const cargoFuncionario = dados.Cargo || "NOVO CARGO"; 
+    
     const salario = dados.Salario || "R$ 0,00";
     
-    // Extenso
     let extensoTexto = dados.SalarioExtenso;
     if (!extensoTexto || extensoTexto.trim() === "") {
         let valorNum = parseFloat(salario.replace("R$", "").replace(/\./g, "").replace(",", ".").trim());
@@ -331,7 +283,6 @@ function desenharCarta(ctx, dados, cfg) {
     }
     const extenso = extensoTexto ? `(${extensoTexto})` : "";
     
-    // Porcentagem
     let rawPct = dados.Porcentagem ? String(dados.Porcentagem).trim() : "";
     let pct = "";
     let showPct = false;
@@ -351,7 +302,7 @@ function desenharCarta(ctx, dados, cfg) {
 
     let paragrafos = [];
 
-    // --- TEXTO ---
+    // --- TEXTO (Usa cargoFuncionario) ---
     if (dados.Tipo === 'Promocao') {
         paragrafos.push(`Prezado(a), **${nome}**`);
         paragrafos.push(`Trabalhar com um propósito tão valioso só é possível porque contamos com pessoas como você em nosso time.`);
@@ -386,7 +337,7 @@ function desenharCarta(ctx, dados, cfg) {
         paragrafos.push(`Contamos com a continuidade de seu apoio.`);
     }
 
-    // Renderiza
+    // Renderiza Texto
     let cursorY = startY;
     paragrafos.forEach(p => {
         if (p.includes("Nossa Natureza")) cursorY += fSize * 0.5;
@@ -394,7 +345,7 @@ function desenharCarta(ctx, dados, cfg) {
         cursorY += (fSize * 0.8); 
     });
 
-    // --- ASSINATURAS ---
+    // --- ASSINATURAS (Usa CargoGestor no rodapé) ---
     const footerY = cursorY + fSize * 3;
     
     ctx.fillStyle = "#ffffff";
@@ -408,12 +359,13 @@ function desenharCarta(ctx, dados, cfg) {
     ctx.font = `bold ${fSize}px Arial`;
     ctx.fillText((dados.Gestor || "NOME GESTOR").toUpperCase(), signatureX, footerY);
     
-    // CARGO GESTOR
+    // CARGO GESTOR (Buscado corretamente)
     ctx.font = `bold ${fSize}px Arial`; 
+    // Garante maiúsculo
     ctx.fillText((dados.CargoGestor || "CARGO").toUpperCase(), signatureX, footerY + (fSize * 1.4));
 }
 
-// --- BOILERPLATE ---
+// --- BOILERPLATE E IMPORTAÇÃO INTELIGENTE ---
 function resetSliders() {
     document.getElementById('confPosY').value = 500; 
     document.getElementById('confPosX').value = 150; 
@@ -497,7 +449,7 @@ window.adicionarManual = function() {
     filaProcessamento.push(dados); renderFila(); showToast('Adicionado!'); document.getElementById('formNome').value = '';
 }
 
-// --- IMPORTAÇÃO EXCEL (BUSCA AGRESSIVA) ---
+// --- IMPORTAÇÃO EXCEL (BUSCA AGRESSIVA POR COLUNAS) ---
 function handleExcelUpload(e) {
     const reader = new FileReader();
     reader.onload = function(event) {
@@ -529,20 +481,31 @@ function handleExcelUpload(e) {
 
                 // --- 2. CARGO GESTOR (BUSCA AGRESSIVA) ---
                 let cargoGestor = '';
+                
+                // Função para normalizar: minúsculo e sem NENHUM caractere especial ou espaço
                 const normalize = (str) => str.toLowerCase().replace(/[^a-z0-9]/g, '');
+
+                // Procura a coluna
                 const chaves = Object.keys(row);
                 const chaveEncontrada = chaves.find(k => {
                     const limpa = normalize(k);
+                    // "Cargo Gestor" -> "cargogestor"
                     return limpa.includes('cargo') && limpa.includes('gestor');
                 });
-                if (chaveEncontrada) cargoGestor = row[chaveEncontrada];
+
+                if (chaveEncontrada) {
+                    cargoGestor = row[chaveEncontrada];
+                }
 
                 return { 
                     id: Date.now() + Math.random(), 
                     Nome: row['Nome completo'] || row['Nome'] || 'Sem Nome', 
                     Gestor: row['Superior Imediato'] || row['Gestor'] || '', 
-                    Cargo: cargoFuncionario,
-                    CargoGestor: cargoGestor || '',
+                    
+                    // SEPARAÇÃO CLARA
+                    Cargo: cargoFuncionario, // Corpo
+                    CargoGestor: cargoGestor || '', // Rodapé
+                    
                     Salario: sal, 
                     Data: data, 
                     Tipo: tipo, 
